@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportScout - Fitness Personality Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-primary: rgba(255, 255, 255, 0.08);
+            --glass-secondary: rgba(255, 255, 255, 0.12);
+            --glass-tertiary: rgba(255, 255, 255, 0.16);
+            --glass-hover: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border-strong: rgba(255, 255, 255, 0.25);
+            
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-tertiary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-accent: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111117;
+            --bg-tertiary: #16161d;
+            
+            --text-primary: rgba(255, 255, 255, 0.95);
+            --text-secondary: rgba(255, 255, 255, 0.70);
+            --text-tertiary: rgba(255, 255, 255, 0.50);
+            --text-accent: #43e97b;
+            
+            --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.18);
+            --shadow-strong: 0 16px 64px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 32px rgba(67, 233, 123, 0.15);
+            
+            /* Missing variables that make elements invisible */
+            --surface: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.15);
+            --borderActive: rgba(67, 233, 123, 0.5);
+            --colorLight: rgba(255, 255, 255, 0.70);
+            --colorDark: rgba(255, 255, 255, 0.95);
+            --green: #22c55e;
+            --glassHover: rgba(255, 255, 255, 0.12);
+            --glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(67, 233, 123, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(240, 147, 251, 0.05) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .quiz-container {
+            background: var(--glass-primary);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 800px;
+            width: 92%;
+            box-shadow: var(--shadow-strong);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .quiz-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            border-color: var(--borderActive);
+            background: var(--glass-hover);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-title {
+            font-size: 2.618rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.02em;
+        }
+
+        .question-counter {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.8;
+            color: var(--colorLight);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .question-section {
+            margin-bottom: 40px;
+        }
+
+        .question-text {
+            font-size: 1.618rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--colorDark);
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.01em;
+        }
+
+        .answers-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .answer-btn {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--colorLight);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+            background: var(--glassHover);
+            border-color: var(--borderActive);
+            color: var(--green);
+        }
+
+        .answer-btn.selected {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #166534, var(--green));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+            border-color: var(--borderActive);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--surface);
+            color: var(--colorLight);
+        }
+
+        .results-section {
+            display: none;
+            text-align: left;
+        }
+
+        .results-title {
+            font-size: 2.618rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            margin-top: -10px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.02em;
+        }
+
+        .ai-recommendation {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #166534, #22c55e, #4ade80, #16a34a);
+            background-size: 400% 400%;
+            animation: gradientMove 2s ease-in-out infinite;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .loading-spinner::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            background: var(--glass);
+            border-radius: 50%;
+        }
+
+        .loading-text {
+            font-size: 1.25rem;
+            color: var(--green);
+            font-weight: 600;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-subtext {
+            font-size: 1rem;
+            color: var(--colorLight);
+            opacity: 0.8;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">Fitness Personality</h1>
+            <p class="question-counter">Question <span id="current-question">1</span> of <span id="total-questions">6</span></p>
+        </div>
+
+        <div id="quiz-section" class="question-section">
+            <h2 id="question-text" class="question-text"></h2>
+            <div id="answers-container" class="answers-grid"></div>
+            
+            <div class="navigation">
+                <button id="prev-btn" class="nav-btn" onclick="previousQuestion()">Previous</button>
+                <button id="next-btn" class="nav-btn" onclick="nextQuestion()" disabled>Next</button>
+            </div>
+        </div>
+
+        <div id="results-section" class="results-section">
+            <h2 class="results-title">Analyzing Your Personality</h2>
+            <div id="ai-recommendation" class="ai-recommendation">
+            </div>
+        </div>
+    </div>
+
+    <script src="fitness-personality-quiz.js"></script>
+</body>
+</html>

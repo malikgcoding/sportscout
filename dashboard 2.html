@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SportScout - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-primary: rgba(255, 255, 255, 0.08);
+            --glass-secondary: rgba(255, 255, 255, 0.12);
+            --glass-tertiary: rgba(255, 255, 255, 0.16);
+            --glass-hover: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border-strong: rgba(255, 255, 255, 0.25);
+            
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-tertiary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-accent: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111117;
+            --bg-tertiary: #16161d;
+            
+            --text-primary: rgba(255, 255, 255, 0.95);
+            --text-secondary: rgba(255, 255, 255, 0.70);
+            --text-tertiary: rgba(255, 255, 255, 0.50);
+            --text-accent: #43e97b;
+            
+            --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.18);
+            --shadow-strong: 0 16px 64px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 32px rgba(67, 233, 123, 0.15);
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(102, 126, 234, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 75% 75%, rgba(67, 233, 123, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 50% 0%, rgba(240, 147, 251, 0.04) 0%, transparent 70%);
+            color: var(--text-primary);
+            width: 100%;
+            height: 100%;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            display: grid;
+            width: 100%;
+            min-height: 100vh;
+            grid-template-columns: 1fr;
+            grid-template-rows: 70px 1fr;
+            grid-template-areas: 
+                'header'
+                'content';
+        }
+
+        .header {
+            grid-area: header;
+            background: var(--glass-primary);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: var(--glass-secondary);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hamburger:hover {
+            background: var(--glass-tertiary);
+            border-color: var(--glass-border-strong);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .hamburger span {
+            width: 22px;
+            height: 2px;
+            background: var(--text-accent);
+            margin: 3px 0;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -5px);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -380px;
+            width: 380px;
+            height: 100vh;
+            background: var(--glass-primary);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--glass-border);
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-section {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section-title {
+            padding: 20px 30px 15px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.02);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sidebar-menu {
+            padding: 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 30px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: var(--glass-secondary);
+            color: var(--text-accent);
+            border-left-color: var(--text-accent);
+            transform: translateX(5px);
+        }
+
+        .sidebar-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-left-color: #ef4444;
+        }
+
+        .sidebar-item svg {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+        }
+
+        .profile-stats {
+            padding: 20px 30px;
+            background: var(--glass-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+        }
+
+        .profile-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .profile-stat-label {
+            color: var(--colorLight);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .profile-stat-value {
+            color: var(--green);
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .content-grid {
+            grid-area: content;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto 1fr;
+            gap: 20px;
+            padding: 30px;
+            overflow: visible;
+        }
+
+        .widget {
+            background: var(--glass-primary);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            border-radius: 16px;
+            padding: 24px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .widget:hover {
+            background: var(--glass-secondary);
+            border-color: var(--glass-border-strong);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .widget-title {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--green);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .widget-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+        }
+
+        .recommendation-widget {
+            grid-column: 1 / 3;
+            grid-row: 1;
+        }
+
+        .stats-widget {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .progress-widget {
+            grid-column: 1 / 4;
+            grid-row: 2;
+        }
+
+        .activities-widget {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .quizzes-widget {
+            grid-column: 2 / 4;
+            grid-row: 3;
+        }
+
+        /* Recommendation Widget */
+        .sport-cards-mini {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 5px 0 12px 0;
+            flex-wrap: wrap;
+        }
+
+        .sport-card-mini {
+            background: var(--glass-secondary);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            padding: 12px;
+            flex: 1 1 calc(25% - 9px);
+            min-width: 140px;
+            max-width: 180px;
+        }
+
+        .sport-card-mini::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--green), #4ade80);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sport-card-mini:hover::before,
+        .sport-card-mini.primary::before {
+            opacity: 1;
+        }
+
+        .sport-card-mini:hover {
+            transform: translateY(-3px);
+            background: var(--glass-tertiary);
+            border-color: var(--glass-border-strong);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .sport-card-mini.primary {
+            background: var(--glass-tertiary);
+            border: 1px solid rgba(67, 233, 123, 0.3);
+            box-shadow: var(--shadow-medium), 0 0 24px rgba(67, 233, 123, 0.1);
+        }
+
+        .sport-name-mini {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-accent);
+            margin-bottom: 6px;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .sport-desc-mini {
+            font-size: 0.75rem;
+            color: var(--colorLight);
+            line-height: 1.3;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-bottom: 4px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Stats Widget */
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: var(--glass-secondary);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--colorLight);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Progress Widget */
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
+            color: var(--colorLight);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .progress-percent {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--green);
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            background: var(--glass-secondary);
+            border: 1px solid var(--glass-border);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: var(--gradient-accent);
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Activities Widget */
+        .activities-widget {
+            max-height: 300px; /* Limit widget height */
+        }
+
+        .activities-widget > div:last-child {
+            max-height: 200px; /* Limit content area height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 5px; /* Add space for scrollbar */
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px; /* Reduced from 16px */
+            padding: 10px; /* Reduced from 14px */
+            background: var(--glass-secondary);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+            border-radius: 12px;
+            font-size: 0.85rem; /* Reduced from 0.9rem */
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .activity-item:hover {
+            background: var(--glass-tertiary);
+            border-color: var(--glass-border-strong);
+            border-left-color: var(--text-accent);
+            transform: translateX(4px);
+        }
+
+        .activity-icon {
+            width: 20px; /* Reduced from 24px */
+            height: 20px; /* Reduced from 24px */
+            margin-right: 12px; /* Reduced from 15px */
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem; /* Reduced from 0.8rem */
+            flex-shrink: 0;
+        }
+
+        /* Analysis Tools Widget */
+        .quizzes-widget {
+            max-height: 300px; /* Limit widget height */
+        }
+
+        .quizzes-widget > div:last-child {
+            max-height: 200px; /* Limit content area height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 5px; /* Add space for scrollbar */
+        }
+
+        .quiz-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px; /* Reduced from 16px */
+            padding: 12px; /* Reduced from 16px */
+            background: var(--glass-secondary);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 12px;
+        }
+
+        .quiz-item:hover:not(.completed) {
+            background: var(--glass-tertiary);
+            border-color: var(--glass-border-strong);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .quiz-item.completed {
+            background: var(--surface);
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .quiz-item.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 8px; /* Adjusted for smaller padding */
+            right: 8px; /* Adjusted for smaller padding */
+            color: var(--green);
+            font-weight: bold;
+            font-size: 1rem; /* Reduced from 1.2rem */
+            background: rgba(34, 197, 94, 0.2);
+            width: 24px; /* Reduced from 28px */
+            height: 24px; /* Reduced from 28px */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-title {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-accent);
+            font-size: 0.9rem; /* Reduced from 1rem */
+            font-weight: 600;
+            margin-bottom: 6px; /* Reduced from 8px */
+            letter-spacing: -0.01em;
+        }
+
+        .quiz-description {
+            font-size: 0.75rem; /* Reduced from 0.8rem */
+            color: var(--colorLight);
+            line-height: 1.4;
+            margin-bottom: 6px; /* Reduced from 8px */
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .quiz-duration {
+            background: rgba(67, 233, 123, 0.15);
+            color: var(--text-accent);
+            border: 1px solid rgba(67, 233, 123, 0.2);
+            font-size: 0.7rem; /* Reduced from 0.75rem */
+            margin-top: 6px; /* Reduced from 8px */
+            font-weight: 500;
+            padding: 3px 6px; /* Reduced from 4px 8px */
+            border-radius: 12px;
+            display: inline-block;
+            width: fit-content;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        /* Firefox scrollbar styling */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        /* Responsive adjustments for sport cards */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .recommendation-widget {
+                grid-column: 1 / 3;
+                grid-row: 1;
+            }
+            
+            .stats-widget {
+                grid-column: 1;
+                grid-row: 2;
+            }
+            
+            .progress-widget {
+                grid-column: 1 / 3;
+                grid-row: 3;
+            }
+            
+            .activities-widget {
+                grid-column: 1;
+                grid-row: 4;
+            }
+            
+            .quizzes-widget {
+                grid-column: 2;
+                grid-row: 4;
+            }
+
+            .sport-card-mini {
+                flex: 1 1 calc(33% - 8px);
+                max-width: calc(33% - 8px);
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(5, auto);
+                padding: 20px;
+                gap: 16px;
+            }
+            
+            .recommendation-widget,
+            .stats-widget,
+            .progress-widget,
+            .activities-widget,
+            .quizzes-widget {
+                grid-column: 1;
+            }
+            
+            .recommendation-widget { grid-row: 1; }
+            .progress-widget { grid-row: 2; }
+            .stats-widget { grid-row: 3; }
+            .activities-widget { grid-row: 4; }
+            .quizzes-widget { grid-row: 5; }
+
+            .sport-card-mini {
+                flex: 0 0 160px;
+                max-width: none;
+                min-width: 160px;
+            }
+        }
+
+        /* Loading states */
+        .loading-placeholder {
+            background: linear-gradient(90deg, var(--surface) 25%, rgba(255, 255, 255, 0.08) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+            height: 24px;
+            margin-bottom: 12px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--colorLight);
+            opacity: 0.8;
+            font-size: 0.9rem;
+            padding: 30px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-small {
+            background: var(--gradient-accent);
+            border: none;
+            color: var(--bg-primary);
+            font-weight: 600;
+            box-shadow: var(--shadow-subtle);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-small:hover {
+            box-shadow: var(--shadow-medium), var(--shadow-glow);
+        }
+
+        /* Overlay for mobile menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>SportScout Menu</h2>
+        </div>
+        
+        <!-- Navigation Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Navigation</div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item active" data-section="dashboard">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                    Dashboard
+                </div>
+                <div class="sidebar-item" data-section="sport-finder">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.855 14.365l-1.817 6.36a1.001 1.001 0 0 0 1.517 1.106L12 18.202l5.445 3.63a1 1 0 0 0 1.517-1.106l-1.817-6.36 4.48-3.584a1.001 1.001 0 0 0-.461-1.767l-5.497-.916-2.772-5.545c-.34-.678-1.449-.678-1.789 0L8.333 8.098l-5.497.916a1 1 0 0 0-.461 1.767l4.48 3.584z"/>
+                    </svg>
+                    Sport Finder
+                </div>
+                <div class="sidebar-item" data-section="clubs">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.205 4.791a5.938 5.938 0 0 0-4.209-1.754A5.906 5.906 0 0 0 12 4.595a5.904 5.904 0 0 0-3.996-1.558 5.942 5.942 0 0 0-4.213 1.758c-2.353 2.363-2.352 6.059.002 8.412l7.332 7.332c.17.299.498.492.875.492a.99.99 0 0 0 .792-.409l7.415-7.415c2.354-2.353 2.355-6.049-.002-8.416z"/>
+                    </svg>
+                    Clubs
+                </div>
+                <div class="sidebar-item" data-section="equipment">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.707 2.293A.996.996 0 0 0 12 2H3a1 1 0 0 0-1 1v9c0 .266.105.52.293.707l9 9a.997.997 0 0 0 1.414 0l9-9a.999.999 0 0 0 0-1.414l-9-9z"/>
+                    </svg>
+                    Equipment
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Profile</div>
+            <div class="profile-stats" id="profile-quick-stats">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item" onclick="window.location.href='profile-viewer.html'">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                    </svg>
+                    View Full Profile
+                </div>
+                
+                <div class="sidebar-item" onclick="exportProfile()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Export Profile
+                </div>
+                
+                <div class="sidebar-item" onclick="document.getElementById('import-input').click()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Import Profile
+                </div>
+                
+                <div class="sidebar-item danger" onclick="clearProfile()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                    </svg>
+                    Clear All Data
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for profile import -->
+    <input type="file" id="import-input" accept=".json" style="display: none;" onchange="importProfile(event)">
+
+    <div class="dashboard">
+        <header class="header">
+            <div class="header-left">
+                <h1>SportScout Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-grid">
+            <!-- Sport Recommendations Widget -->
+            <div class="widget recommendation-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">At a Glance</h3>
+                    <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.855 14.365l-1.817 6.36a1.001 1.001 0 0 0 1.517 1.106L12 18.202l5.445 3.63a1 1 0 0 0 1.517-1.106l-1.817-6.36 4.48-3.584a1.001 1.001 0 0 0-.461-1.767l-5.497-.916-2.772-5.545c-.34-.678-1.449-.678-1.789 0L8.333 8.098l-5.497.916a1 1 0 0 0-.461 1.767l4.48 3.584z"/>
+                    </svg>
+                </div>
+                <div id="sport-recommendations">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Stats Widget -->
+            <div class="widget stats-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Your Stats</h3>
+                    <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3v18h18v-2H5V3H3zm14 13l4-7-2-1.5L15 13l-2-2-1.5 1.5L15 16z"/>
+                    </svg>
+                </div>
+                <div id="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Analysis Completed</span>
+                        <span class="stat-value" id="quiz-date">Not yet</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Matches Found</span>
+                        <span class="stat-value" id="matches-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Profile Score</span>
+                        <span class="stat-value">60%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Days</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Widget -->
+            <div class="widget progress-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Progress</h3>
+                    <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Profile Completion</span>
+                            <span class="progress-percent">60%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Analysis Completion</span>
+                            <span class="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Goals Achievement</span>
+                            <span class="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activities Widget -->
+            <div class="widget activities-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Recent Activity</h3>
+                    <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div id="activities-content">
+                    <div class="activity-item">
+                        <div class="activity-icon">🎯</div>
+                        <span class="activity-text">Welcome to SportScout!</span>
+                        <span class="activity-time">Just now</span>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📊</div>
+                        <span class="activity-text">Profile created</span>
+                        <span class="activity-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Tools Widget -->
+            <div class="widget quizzes-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Analysis Tools</h3>
+                    <svg class="widget-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div id="additional-quizzes">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
